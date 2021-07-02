@@ -1,3 +1,7 @@
+# Visual Studio Code 
+.vs
+
+# Haskell .gitignore template
 dist
 dist-*
 cabal-dev
