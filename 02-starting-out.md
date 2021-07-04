@@ -1,7 +1,5 @@
 # Starting out
 
-
-
 ```hs
 ghci> True
 True
@@ -40,6 +38,8 @@ ghci> div 9 3
 ghci> 9 `div` 3
 3
 ```
+
+Special character functions `*`, `+`, `-`, `/`, `==`, `/=`, `>`, `<`, `>=`, `<=`, `&&`, `||`, `++`, `--`, `!!` are implicit infixes.
 
 ## First functions
 
@@ -272,3 +272,170 @@ All numbers from 1-100 that when divided by 7 get a remainder of 2
 ghci> [x | x <- [1..100], x `mod` 7 == 2]  
 [2,9,16,23,30,37,44,51,58,65,72,79,86,93,100]
 ```
+
+The last part of the comprehension is the predicate. Using predicates is also called **filtering**.
+
+Let's now generate a list of `BOOM!` for even numbers and `BANG!` for odd numbers for all numbers bigger than 10.
+
+```hs
+boomBang xs = [ if even x then "BOOM!" else "BANG!" | x <- xs, x > 10]
+```
+
+`x > 10` is our predicate and only returns `True` for numbers bigger than 10.
+The output function checks for *evenness* and returns `BOOM!` otherwise `BANG!`.
+
+```hs
+ghci> boomBang [1..14]
+["BOOM!","BANG!","BOOM!","BANG!"]
+```
+
+#### Multiple predicates
+
+We can add more than one predicate to include all primes from 1-10. (an element must satisfy all the predicates to be included in the resulting list)
+
+```hs
+primeNumbers = [2,3,5,7,11,13,17]
+boomBang' xs = [if even x then "BOOM!" else "BANG!" | x <- xs, x > 10, x `elem` primeNumbers] 
+```
+
+With this we can have some fun using the `cons` to create some awesome song lyrics:
+
+```hs
+ghci> "He shot me down..." : boomBang' [1..14]
+["He shot me down...","BANG!","BANG!"]
+```
+
+#### Multiple lists
+
+We can have more than one list to draw from and only output the value if the result matches the predicate.
+
+```hs
+ghci> [x*y | x <- [2,3,4], y <- [3,4,5], x*y > 10]
+[12,15,12,16,20]
+```
+
+This also works with lists of strings 
+
+```hs
+ghci> let a = ["awesome", "stinky", "hilarious"] 
+ghci> let n = ["teacher","officer", "hero"]                    
+ghci> [ad ++ " " ++ no | ad <- a, no <- n] 
+["awesome teacher","awesome officer","awesome hero","stinky teacher","stinky officer","stinky hero","hilarious teacher","hilarious officer","hilarious hero"]
+```
+
+##### Count elements
+
+For a real world example, lets count the numbers of elements in our `primeNumbers` list:
+
+```hs
+ghci> let length' xs = sum [ 1 | _ <- xs]
+ghci> length' primeNumbers
+6
+```
+
+> Note: The `_` means that we dont care what we pull from `xs` and throw it away.
+
+And because strings are lists, we can now count the length of strings with this: 
+
+```hs
+ghci> l' "how long is this?"  
+17
+```
+
+Accurate.
+
+## Tuples
+
+Tuples are like lists but they are denoted with parentheses.
+
+Tuples of size two are called pairs. `(1,2)`
+
+Tuples of size three are called triples. `(1,2,3)`
+
+```hs
+
+```
+
+As with vectors `[1,2]` we can add tuples to lists.
+
+```hs
+[(1,2),(3,4)]
+```
+
+Other than in lists, we can't do this:
+
+```hs
+ghci> [(1,2),(1,2,3),(1,2)]
+
+<interactive>:161:8: error:
+    * Couldn't match expected type: (a, b)
+                  with actual type: (a0, b0, c0)
+    * In the expression: (1, 2, 3)
+      In the expression: [(1, 2), (1, 2, 3), (1, 2)]
+      In an equation for `it': it = [(1, 2), (1, 2, 3), (1, 2)]
+    * Relevant bindings include
+        it :: [(a, b)] (bound at <interactive>:161:1)
+```
+
+Tuples don't have to be homogeneous:
+
+```hs
+ghci> (1,"2")
+(1,"2")
+```
+
+Lists do:
+
+```hs
+ghci> [1,"2"]
+
+<interactive>:163:2: error:
+    * No instance for (Num String) arising from the literal `1'
+    * In the expression: 1
+      In the expression: [1, "2"]
+      In an equation for `it': it = [1, "2"]
+```
+
+To understand why we can look at the type of an expression using the `:t` prefix.
+
+```hs
+ghci> :t [[1,2],[2,3]]
+[[1,2],[2,3]] :: Num a => [[a]]
+ghci> :t [[1,2],[1,2,3],[2,3]]
+[[1,2],[1,2,3],[2,3]] :: Num a => [[a]]
+ghci> :t [(1,2),(2,3)] 
+[(1,2),(2,3)] :: (Num a, Num b) => [(a, b)]
+ghci> :t [(1,"one"),(2,"two")] 
+[(1,"one"),(2,"two")] :: Num a => [(a, String)]
+```
+
+So a list of vectors is just a list of numbers... whereas a list of tuples is a list of types. As seen in the last example (`"one"` and `"two"` being lists of characters), tuples can also contain lists.
+
+### Right Triangle Example
+
+Lets finish this chapter by finding the smallest right triangle with integer side-length.
+
+To create a list of all triangles with side lengths between 1 and 10 we can do this.
+
+```hs
+[(a,b,c) | c <- [1..10], b <-[1..10],a<-[1..10]]
+```
+
+Our solution will be in this set of triples.
+
+Now lets add a condition that only right triangles are allowed (we remove duplicates by restricting the b isn't larger than the hypothenuse and side a isn't larger than side b)
+
+```hs
+ghci> [(a,b,c) | c <- [1..10], b <-[1..c], a<-[1..b], a^2 + b^2 == c^2]
+[(3,4,5),(6,8,10)]
+```
+
+Now we can add a final condition by filtering triangles with  only allowing triangles with perimeter 12.
+
+```hs
+ghci> let rightTriangles = [(a,b,c) | c <- [1..10], b <-[1..c],a<-[1..b], a^2 + b^2 == c^2, a+b+c==12]
+ghci> rightTriangles
+[(3,4,5)]
+```
+
+***This is a common pattern in functional programming:*** Take a starting set of solutions and apply transformations to those solutions and filter them until you get the right ones.
