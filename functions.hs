@@ -8,11 +8,11 @@ doubleSmallNumber x = if x > 100
 
 doubleSmallNumber' x = (if x > 100 then x else doubleMe x) + 1
 
-boomBang xs = [ if even x then "BOOM!" else "BANG!" | x <- xs, x > 10 ]
+boomBang xs = [if even x then "BOOM!" else "BANG!" | x <- xs, x > 10 ]
 primeNumbers = [2,3,5,7,11,13]
 boomBang' xs = [if even x then "BOOM!" else "BANG!" | x <- xs, x > 10, x `elem` primeNumbers] 
 
-length' xs = sum [1|_<-xs]
+length' xs = sum [1 | _ <- xs]
 
 removeNonUppercase :: String -> String
 removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']]   
@@ -53,3 +53,20 @@ head' :: [a] -> a
 head' [] = error "The list is empty"
 head' (x:_) = x
 
+tell :: (Show a) => [a] -> String
+tell [] = "The list is empty"
+tell (x:[]) = "The list contains one element: " ++ show x
+tell (x:y:[]) = "The list contains two elements: " ++ show x ++ " and " ++ show y
+tell (x:y:_) = "The list is long, the first two elements are " ++ show x ++ " and " ++ show y
+
+length'' :: (Num a) => [a] -> a
+length'' [] = 0
+length'' (_:xs) = 1 + length'' xs
+
+sum' :: (Num a) => [a] -> a
+sum' [] = 0
+sum' (x:xs) = x + sum' xs
+
+capital :: String -> String
+capital "" = "The string is empty"
+capital all@(x:_) = "The first letter of " ++ all ++ " is " ++ [x]

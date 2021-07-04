@@ -119,6 +119,51 @@ head' (x:_) = x
 
 > Note: If we want to bind to multiple variables (even if one is `_`) we have to surround them with parentheses.
 
+```hs
+tell :: (Show a) => [a] -> String
+tell [] = "The list is empty"
+tell (x:[]) = "The list contains one element: " ++ show x
+tell (x:y:[]) = "The list contains two elements: " ++ show x ++ " and " ++ show y
+tell (x:y:_) = "The list is long, the first two elements are " ++ show x ++ " and " ++ show y
+```
+
+This function takes care of all possibilities and is therefore considered safe. Note we could rewrite `(x:[])` and `([x:y:[]])` with `[x]` and `[x,y]` because it's syntactic sugar and we don't need the parentheses.
+
+We can rewrite our `length'` function using recursion and pattern matching.
+
+```hs
+length'' :: (Num a) => [a] -> a
+length'' [] = 0
+length'' (_:xs) = 1 + length'' xs
+```
+
+The following function uses pattern matching to sum over a list of numbers:
+
+```hs
+sum' :: (Num a) => [a] -> a
+sum' [] = 0
+sum' (x:xs) = x + sum' xs
+```
+
+### as patterns
+
+When breaking up stuff according a pattern we can retain a reference to the thing we've broken up by using `anything@` before our pattern. 
+
+Like that we can use `anything` in our function as well as our pattern match components.
+
+```hs
+capital :: String -> String
+capital "" = "The string is empty"
+capital all@(x:_) = "The first letter of " ++ all ++ " is " ++ [x]
+```
+
+> Note: When returning `x` in our string we need to put it in `[]`. If we don't the compiler will complain because he tries to `++` a `Char x` to a `[Char]`.
+
+```hs
+functions.hs:72:64: error:
+    * Couldn't match expected type `[Char]' with actual type `Char'
+```
+
 ## Guards
 
 ## Where
