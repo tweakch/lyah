@@ -1,5 +1,11 @@
 # Starting out
 
+Haskell is a functional programming language. 
+
+## Statically typed
+
+Every expression in Haskell has a type which is determined at compile time. Even data types like `True` will evaluate.
+
 ```hs
 ghci> True
 True
@@ -14,6 +20,28 @@ ghci> 2.5*2
 5.0
 ```
 
+Because everything in Haskell is an expression, and everything has a type, every expression has type. You can inspect it using `:t`
+
+```hs
+ghci> :t True
+True :: Bool
+
+ghci> :t 2.5*2
+2.5*2 :: Fractional a => a
+
+ghci> :t (*)
+(*) :: Num a => a -> a -> a
+
+ghci> :t map (*2) [1,2,3]
+map (*2) [1,2,3] :: Num b => b
+
+ghci> :t map
+map :: (a -> b) -> [a] -> [b]
+
+ghci> :t (*2)
+(*2) :: Num a => a -> a
+```
+
 ## Functions
 
 > `*` is a function that takes two numbers and multiplies them.
@@ -26,6 +54,39 @@ ghci> succ 9 + max 5 4 + 1
 
 ghci> (succ 9) + (max 5 4) + 1  
 16 
+```
+
+Sometimes the compiler can't infer the order of functions. 
+
+```hs
+ghci> map show sort [1,3,2]
+
+<interactive>:33:1: error:
+    • Couldn't match expected type ‘[Integer] -> t’
+                  with actual type ‘[String]’
+    • The function ‘map’ is applied to three arguments,
+      but its type ‘(() -> String) -> [()] -> [String]’ has only two
+      In the expression: map show sort [1, 3, 2]
+      In an equation for ‘it’: it = map show sort [1, 3, 2]
+    • Relevant bindings include it :: t (bound at <interactive>:33:1)
+
+<interactive>:33:10: error:
+    • Couldn't match expected type ‘[()]’
+                  with actual type ‘[()] -> [()]’
+    • Probable cause: ‘sort’ is applied to too few arguments
+      In the second argument of ‘map’, namely ‘sort’
+      In the expression: map show sort [1, 3, 2]
+      In an equation for ‘it’: it = map show sort [1, 3, 2]
+```
+
+What haskell is telling us here is that it tried to invoke `map` with three parameters but it only has `two`. 
+
+We must help the compiler here using `()` or `$`. 
+
+```hs 
+ghci> map show (sort [1,3,2])
+
+ghci> map show $ sort [1,3,2]
 ```
 
 ### Infix functions
