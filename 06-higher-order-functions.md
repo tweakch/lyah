@@ -36,9 +36,27 @@ ghci> map (+3) [2,3,4]
 [5,6,7]
 ```
 
-
 ## Only folds and horses
+
+```hs
+ghci> :t foldr
+foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b
+``` 
+
+```hs
+ghci> :t foldl
+foldr :: Foldable t => (b -> a -> b) -> b -> t a -> b```
 
 ## Function application with $
 
+```hs
+($) :: (a -> b) -> a -> b
+f $ x = f x
+```
+
 ## Function composition
+
+```hs
+ghci> :t (.)
+(.) :: (b -> c) -> (a -> b) -> a -> c
+```
